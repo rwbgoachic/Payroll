@@ -148,4 +148,4 @@ const Wallet: React.FC = () => {
   );
 };
 
-export default Wallet
+export default Wallet;

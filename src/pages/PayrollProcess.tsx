@@ -45,6 +45,9 @@ const PayrollProcess: React.FC = () => {
 
   const loadCompanyId = async () => {
     try {
+      setLoading(true);
+      setError('');
+
       const { data, error } = await supabase
         .from('employees')
         .select('company_id')
@@ -58,6 +61,8 @@ const PayrollProcess: React.FC = () => {
       loadWalletBalance(data.company_id);
     } catch (err) {
       setError('Failed to load company information');
+    } finally {
+      setLoading(false);
     }
   };
 
