@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 50%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary-foreground: 240 5.9% 10%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive-foreground: 0 0% 98%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --popover-foreground: 240 10% 3.9%;
+    --card-foreground: 240 10% 3.9%;
+    --radius: 0.5rem;
+    
+    --color-primary: 15 82 186; /* #0F52BA */
+    --color-secondary: 0 163 163; /* #00A3A3 */
+    --color-accent: 255 107 53; /* #FF6B35 */
+    --color-success: 39 174 96; /* #27AE60 */
+    --color-warning: 241 196 15; /* #F1C40F */
+    --color-error: 231 76 60; /* #E74C3C */
+    --color-background: 249 250 251; /* #F9FAFB */
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
+
+  html {
+    @apply text-gray-800;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-gray-50;
+  }
+
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px;
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-white hover:bg-primary-dark;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary-dark;
+  }
+  
+  .btn-outline {
+    @apply border border-gray-300 bg-white text-gray-700 hover:bg-gray-50;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-sm p-4 sm:p-6;
+  }
+  
+  .form-input {
+    @apply w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary text-sm;
+  }
+  
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  
+  .table-header {
+    @apply px-4 sm:px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+  
+  .table-cell {
+    @apply px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500;
+  }
+
+  /* Grid layouts */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6;
+  }
+
+  /* Container */
+  .container-responsive {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Typography */
+  .text-responsive {
+    @apply text-base sm:text-lg lg:text-xl;
+  }
+
+  .heading-responsive {
+    @apply text-2xl sm:text-3xl lg:text-4xl font-bold;
+  }
+
+  /* Spacing */
+  .section-spacing {
+    @apply py-8 sm:py-12 lg:py-16;
+  }
+
+  /* Navigation */
+  .nav-menu {
+    @apply hidden md:flex space-x-4;
+  }
+
+  .mobile-menu {
+    @apply md:hidden;
+  }
+
+  /* Cards */
+  .card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  .card-responsive {
+    @apply flex flex-col sm:flex-row items-start sm:items-center gap-4;
+  }
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Responsive table wrapper */
+.table-responsive {
+  @apply overflow-x-auto -mx-4 sm:-mx-6;
+}
+
+/* Responsive images */
+.img-responsive {
+  @apply w-full h-auto object-cover;
+}
+
+/* Responsive forms */
+.form-group-responsive {
+  @apply space-y-4 sm:space-y-0 sm:grid sm:grid-cols-2 sm:gap-4;
+}
+
+/* Responsive buttons */
+.btn-group-responsive {
+  @apply flex flex-col sm:flex-row gap-2 sm:gap-4;
+}
+
+/* Responsive text containers */
+.text-container {
+  @apply max-w-prose mx-auto px-4 sm:px-6;
+}
+
+/* Responsive padding and margins */
+.p-responsive {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+.m-responsive {
+  @apply m-4 sm:m-6 lg:m-8;
+}
+
+/* Responsive flex layouts */
+.flex-responsive {
+  @apply flex flex-col sm:flex-row gap-4 sm:gap-6;
+}
+
+/* Responsive grid layouts */
+.grid-cols-responsive {
+  @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+/* Responsive visibility */
+.show-mobile {
+  @apply block sm:hidden;
+}
+
+.show-desktop {
+  @apply hidden sm:block;
+}
