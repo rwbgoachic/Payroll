@@ -1,11 +1,43 @@
-import React from 'react';
-import { Users, DollarSign, FileText, BarChart3 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Users, DollarSign, FileText, BarChart3, Wallet } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import StatCard from '../components/dashboard/StatCard';
 import PayrollChart from '../components/dashboard/PayrollChart';
 import UpcomingDeadlines from '../components/dashboard/UpcomingDeadlines';
 import RecentActivity from '../components/dashboard/RecentActivity';
+import WalletBalanceCard from '../components/payroll/WalletBalanceCard';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuth();
+  const [companyId, setCompanyId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      loadCompanyId();
+    }
+  }, [user]);
+
+  const loadCompanyId = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('employees')
+        .select('company_id')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (error) throw error;
+      setCompanyId(data.company_id);
+    } catch (err) {
+      console.error('Error loading company ID:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -15,7 +47,7 @@ const Dashboard: React.FC = () => {
             Welcome back, here's what's happening with your payroll.
           </p>
         </div>
-        <button className="btn btn-primary">Run Payroll</button>
+        <Link to="/app/payroll" className="btn btn-primary">Run Payroll</Link>
       </div>
       
       {/* Stats Grid */}
@@ -52,7 +84,11 @@ const Dashboard: React.FC = () => {
           <PayrollChart />
         </div>
         <div>
-          <UpcomingDeadlines />
+          {companyId && !loading ? (
+            <WalletBalanceCard companyId={companyId} />
+          ) : (
+            <UpcomingDeadlines />
+          )}
         </div>
       </div>
       

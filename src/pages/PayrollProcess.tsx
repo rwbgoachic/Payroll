@@ -10,7 +10,8 @@ import {
   Upload,
   CheckCircle,
   AlertCircle,
-  Calculator
+  Calculator,
+  Wallet
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,6 +19,7 @@ import PayrollForm from '../components/payroll/PayrollForm';
 import PayrollCalculator from '../components/payroll/PayrollCalculator';
 import { PayrollService } from '../services/payrollService';
 import DisbursementStatus from '../components/payroll/DisbursementStatus';
+import { WalletService } from '../services/walletService';
 
 const PayrollProcess: React.FC = () => {
   const [step, setStep] = useState(1);
@@ -30,6 +32,8 @@ const PayrollProcess: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [disbursementId, setDisbursementId] = useState<string | null>(null);
   const [disbursementMethod, setDisbursementMethod] = useState<'wallet' | 'ach' | null>(null);
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
+  const [walletLoading, setWalletLoading] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -49,8 +53,24 @@ const PayrollProcess: React.FC = () => {
 
       if (error) throw error;
       setCompanyId(data.company_id);
+      
+      // Load wallet balance
+      loadWalletBalance(data.company_id);
     } catch (err) {
       setError('Failed to load company information');
+    }
+  };
+
+  const loadWalletBalance = async (companyId: string) => {
+    try {
+      setWalletLoading(true);
+      const balance = await WalletService.getEmployerBalance(companyId);
+      setWalletBalance(balance);
+    } catch (err) {
+      console.error('Error loading wallet balance:', err);
+      // Don't set error state to avoid disrupting the main flow
+    } finally {
+      setWalletLoading(false);
     }
   };
 
@@ -76,15 +96,24 @@ const PayrollProcess: React.FC = () => {
         calculations
       );
       
+      // Determine disbursement method based on wallet balance
+      const totalNetPay = calculations.reduce((sum, calc) => sum + calc.netPay, 0);
+      
+      if (walletBalance !== null && walletBalance >= totalNetPay) {
+        setDisbursementMethod('wallet');
+      } else {
+        setDisbursementMethod('ach');
+      }
+      
       // In a real implementation, we would get the disbursement ID from the result
       // For now, we'll simulate it
       setDisbursementId(`DISBURSEMENT-${Date.now()}`);
       
-      // Randomly choose a disbursement method for demonstration
-      setDisbursementMethod(Math.random() > 0.5 ? 'wallet' : 'ach');
-      
       setSuccess('Payroll processed successfully!');
       setStep(3);
+      
+      // Refresh wallet balance after processing
+      loadWalletBalance(companyId);
     } catch (err) {
       setError('Failed to process payroll');
       console.error(err);
@@ -100,6 +129,57 @@ const PayrollProcess: React.FC = () => {
       case 2:
         return (
           <div className="space-y-6">
+            {walletBalance !== null && (
+              <div className="card bg-gray-50">
+                <div className="flex items-center">
+                  <Wallet className="h-5 w-5 text-primary mr-2" />
+                  <h3 className="text-lg font-medium text-gray-900">Wallet Balance</h3>
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-600">Current balance:</p>
+                    <p className="text-xl font-semibold">
+                      {walletLoading ? (
+                        <span className="text-gray-400">Loading...</span>
+                      ) : (
+                        new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD'
+                        }).format(walletBalance)
+                      )}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-600">Total payroll amount:</p>
+                    <p className="text-xl font-semibold">
+                      {calculations.length > 0 ? (
+                        new Intl.NumberFormat('en-US', {
+                          style: 'currency',
+                          currency: 'USD'
+                        }).format(calculations.reduce((sum, calc) => sum + calc.netPay, 0))
+                      ) : (
+                        <span className="text-gray-400">Calculating...</span>
+                      )}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-gray-600">Payment method:</p>
+                    <p className="text-lg font-medium">
+                      {walletLoading ? (
+                        <span className="text-gray-400">Determining...</span>
+                      ) : walletBalance >= calculations.reduce((sum, calc) => sum + calc.netPay, 0) ? (
+                        <span className="text-success">Wallet Transfer</span>
+                      ) : (
+                        <span className="text-primary">ACH Transfer</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <PayrollCalculator 
               periodId={selectedPeriodId} 
               employeeIds={selectedEmployees}

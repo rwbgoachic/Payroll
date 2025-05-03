@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { CircuitBreaker, retry } from '../lib/resilience';
+import { WalletService } from './walletService';
 
 interface DisbursementResult {
   success: boolean;
@@ -59,7 +60,12 @@ export async function processDisbursement(
     // Check if employer wallet has sufficient balance
     if (employerWallet.balance >= netPay) {
       // Transfer from employer wallet to employee wallet
-      const result = await transferFromWallet(employerWallet, employeeId, netPay);
+      const result = await WalletService.processPayrollDisbursement(employerId, employeeId, netPay);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Wallet transfer failed');
+      }
+      
       return {
         success: true,
         method: 'wallet',
@@ -82,35 +88,6 @@ export async function processDisbursement(
       error: error instanceof Error ? error.message : 'Unknown error during disbursement'
     };
   }
-}
-
-/**
- * Transfer funds from employer wallet to employee wallet
- * @param employerWallet The employer's wallet
- * @param employeeId The employee's ID
- * @param amount The amount to transfer
- * @returns A promise that resolves to the transaction details
- */
-async function transferFromWallet(
-  employerWallet: EmployerWallet,
-  employeeId: string,
-  amount: number
-): Promise<{ transactionId: string }> {
-  // Use retry with exponential backoff for critical database operations
-  return retry(async () => {
-    // Start a transaction
-    const { data, error } = await supabase.rpc('transfer_funds', {
-      p_from_wallet_id: employerWallet.id,
-      p_employee_id: employeeId,
-      p_amount: amount
-    });
-
-    if (error) {
-      throw new Error(`Wallet transfer failed: ${error.message}`);
-    }
-
-    return { transactionId: data.transaction_id };
-  }, 3, 1000);
 }
 
 /**

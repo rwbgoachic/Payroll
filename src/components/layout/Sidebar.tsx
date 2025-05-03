@@ -8,7 +8,8 @@ import {
   Home, 
   Settings, 
   Users, 
-  X
+  X,
+  Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -27,6 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     { name: t('payroll.process'), path: '/app/payroll', icon: <DollarSign size={20} /> },
     { name: t('taxes.filing'), path: '/app/tax-filing', icon: <FileText size={20} /> },
     { name: t('dashboard.statistics'), path: '/app/reports', icon: <BarChart3 size={20} /> },
+    { name: 'Wallet', path: '/app/wallet', icon: <Wallet size={20} /> },
     { name: t('settings.title'), path: '/app/settings', icon: <Settings size={20} /> },
   ];
 

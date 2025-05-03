@@ -11,6 +11,7 @@ import PayrollProcess from './pages/PayrollProcess';
 import Reports from './pages/Reports';
 import TaxFiling from './pages/TaxFiling';
 import Settings from './pages/Settings';
+import Wallet from './pages/Wallet';
 import EmployeePortal from './pages/Employee/EmployeePortal';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -94,6 +95,7 @@ function AppRoutes() {
         <Route path="payroll" element={<PayrollProcess />} />
         <Route path="reports" element={<Reports />} />
         <Route path="tax-filing" element={<TaxFiling />} />
+        <Route path="wallet" element={<Wallet />} />
         <Route path="settings" element={<Settings />} />
         <Route path="blog">
           <Route index element={<AdminDashboard />} />
