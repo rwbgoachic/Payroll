@@ -1,0 +1,1 @@
+export const FILE_SERVICE_URL = "https://files.paysurity.com";
