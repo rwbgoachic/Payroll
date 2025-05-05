@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 import { validateEmployee } from './employeeValidator';
-import { calculateTax } from './taxCalculator';
+import { calculateTax } from '@paysurity/common-utils/tax';
 import { generatePayStub } from './payStubGenerator';
 
 /**
